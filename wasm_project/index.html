@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>My First Wasm Project</h2>
+
+<script src="hello.js"></script>
+
+<script>
+Module.onRuntimeInitialized = function() {
+    let result = Module.ccall(
+        'add',
+        'number',
+        ['number','number'],
+        [4,6]
+    );
+    console.log("Result:", result);
+};
+</script>
+
+</body>
+</html>
