@@ -2,20 +2,49 @@
 <html>
 <body>
 
-<h2>My First Wasm Project</h2>
+<h2>String Encryption Tool 🔐</h2>
+
+<input id="text" type="text" placeholder="Enter text">
+<br><br>
+
+<button onclick="encryptText()">Encrypt (+3)</button>
+<button onclick="decryptText()">Decrypt (-3)</button>
+
+<p id="result"></p>
 
 <script src="hello.js"></script>
 
 <script>
-Module.onRuntimeInitialized = function() {
-    let result = Module.ccall(
-        'add',
+
+function sendStringToWasm(str, funcName) {
+
+    let length = Module.lengthBytesUTF8(str) + 1;
+    let ptr = Module._malloc(length);
+
+    Module.stringToUTF8(str, ptr, length);
+
+    let resultPtr = Module.ccall(
+        funcName,
         'number',
-        ['number','number'],
-        [4,6]
+        ['number'],
+        [ptr]
     );
-    console.log("Result:", result);
-};
+
+    let result = Module.UTF8ToString(resultPtr);
+
+    document.getElementById("result").innerText = result;
+}
+
+function encryptText() {
+    let text = document.getElementById("text").value;
+    sendStringToWasm(text, 'encrypt');
+}
+
+function decryptText() {
+    let text = document.getElementById("text").value;
+    sendStringToWasm(text, 'decrypt');
+}
+
 </script>
 
 </body>
